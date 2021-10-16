@@ -12,9 +12,8 @@ defmodule Words do
     if loops == 0 do
       word_list
     else
-      if rem(loops, 10) == 0 do
-        :timer.sleep(2)
-      end
+      Process.sleep(700)
+      IO.write(".")
 
       scrape_word(word_list)
       |> get(loops - 1)
@@ -22,10 +21,10 @@ defmodule Words do
   end
 
   defp scrape_word(word_list) do
-    resp = HTTPoison.get!("https://www.aleatorios.com/")
+    resp = request("https://www.aleatorios.com/")
 
     word =
-      resp.body
+      resp
       |> Floki.parse_document!()
       |> Floki.find("div.col.text-center.result")
       |> Floki.find("h1")
@@ -39,4 +38,26 @@ defmodule Words do
 
     [word | word_list]
   end
+
+  defp request(url) do
+    case HTTPoison.get(url) do
+      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
+        body
+
+      {:error, %HTTPoison.Error{}} ->
+        IO.write("!")
+        Process.sleep(10000)
+        request(url)
+    end
+  end
 end
+
+[number_arg] = System.argv()
+
+{number, _} = Integer.parse(number_arg)
+
+IO.puts("Starting...")
+
+words_list = Words.get(number)
+
+File.write!("palabras.txt", Enum.join(words_list, "\n"))
