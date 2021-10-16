@@ -2,7 +2,7 @@ import random
 import tkinter as tk
 import tkinter.font as tkFont
 from string import ascii_uppercase
-from tkinter import Button, Canvas, Label
+from tkinter import Button, Canvas, Label, Toplevel
 
 from PIL import Image, ImageTk
 
@@ -12,6 +12,13 @@ class App:
         self.buttons = {}
         self.words = list()
         self.root = root
+
+        self.original_settings = {
+            "bg": "skyBlue",
+            "fg": "Black",
+            "activebackground": "skyBlue",
+            "activeforeground": "Black",
+        }
 
         self.chosen_word = []
         self.guessed_word = []
@@ -63,14 +70,11 @@ class App:
                 _button = Button(
                     self.root,
                     text=letter,
-                    bg="skyBlue",
-                    fg="Black",
-                    activebackground="skyBlue",
-                    activeforeground="Black",
                     width=2,
                     height=1,
                     font=("Helvetica", "20"),
                     command=lambda letter=letter: self.guess(letter),
+                    **self.original_settings,
                 )
                 _button.grid(column=j, row=i)
                 self.buttons[letter] = _button
@@ -100,14 +104,44 @@ class App:
             self.guesses += 1
             self.img_label.config(image=self.images[self.guesses])
 
+        if self.guesses == 11:
+            self.fin("Perdiste")
+
+        if "_" not in self.guessed_word:
+            self.fin("Ganaste")
+
         button = self.buttons[button]
         button["state"] = tk.DISABLED
         button.configure(
             bg="Gray", fg="white", activebackground="Gray", activeforeground="white"
         )
 
+    def fin(self, texto):
+        new_window = Toplevel(self.root)
+        new_window.grab_set()
+        text_label = Label(new_window)
+        ft = tkFont.Font(family="Times", size=30)
+        text_label.grid()
+        text_label.config(font=ft, text=texto)
+        Button(
+            new_window,
+            text="¿Volver a jugar?",
+            command=lambda window=new_window: self.play_again(window),
+        ).grid()
+
+    def play_again(self, window):
+        window.destroy()
+        window.update()
+        for button in self.buttons.values():
+            button.configure(**self.original_settings)
+            button["state"] = tk.ACTIVE
+        self.guesses = 0
+        self.img_label.config(image=self.images[0])
+        self._set_word()
+
 
 if __name__ == "__main__":
     root = tk.Tk()
     app = App(root)
     root.mainloop()
+
