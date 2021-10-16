@@ -6,12 +6,12 @@ authors = ["Sebastian Marines <sebastian0marines@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-pyglet = "^1.5.21"
+tk = "^0.1.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
 mypy = "^0.910"
-black = {version = "^21.9b0", allow-prereleases = true}
+black = { version = "^21.9b0", allow-prereleases = true }
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
