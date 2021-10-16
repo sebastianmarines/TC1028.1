@@ -105,6 +105,7 @@ class App:
             self.img_label.config(image=self.images[self.guesses])
 
         if self.guesses == 11:
+            self.text_label.config(text=" ".join(self.chosen_word))
             self.fin("Perdiste")
 
         if "_" not in self.guessed_word:
@@ -144,4 +145,3 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = App(root)
     root.mainloop()
-
