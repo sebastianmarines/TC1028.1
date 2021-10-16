@@ -13,6 +13,11 @@ class App:
         self.words = list()
         self.root = root
 
+        self.chosen_word = []
+        self.guessed_word = []
+
+        self.guesses = 0
+
         # setting title
         self.root.title("Juego del ahorcado")
         # setting self.root size
@@ -34,20 +39,19 @@ class App:
         self._configure_buttons()
 
         self.images = [
-            ImageTk.PhotoImage(Image.open(f"images/hang{n}.png")) for n in range(11)
+            ImageTk.PhotoImage(Image.open(f"images/hang{n}.png")) for n in range(12)
         ]
-        img_label = Label(self.root)
-        img_label.grid(row=4, column=1, columnspan=3, padx=10, pady=40)
-        img_label.config(image=self.images[10])
+        self.img_label = Label(self.root)
+        self.img_label.grid(row=4, column=1, columnspan=3, padx=10, pady=40)
+        self.img_label.config(image=self.images[0])
 
-        text_label = Label(self.root)
+        self.text_label = Label(self.root)
         ft = tkFont.Font(family="Times", size=30)
-        text_label.grid(row=5, column=5, columnspan=10)
-        text_label.config(font=ft)
+        self.text_label.grid(row=5, column=5, columnspan=10)
+        self.text_label.config(font=ft)
 
         self._load_words()
-
-        text_label.config(text=random.choice(self.words))
+        self._set_word()
 
     def _configure_buttons(self):
         n = 13
@@ -75,8 +79,28 @@ class App:
         with open("palabras.txt") as file:
             self.words = [line.strip("\n") for line in file.readlines()]
 
-    def guess(self, letter):
-        button = self.buttons[letter]
+    def _set_word(self):
+        self.chosen_word = list(random.choice(self.words))
+        self.guessed_word = list("_" * len(self.chosen_word))
+        self._update_word()
+
+    def _update_word(self):
+        self.text_label.config(text=" ".join(self.guessed_word))
+
+    def guess(self, button):
+        correct = False
+        for i, letter in enumerate(self.chosen_word):
+            if letter == button:
+                correct = True
+                self.guessed_word[i] = letter
+
+        self._update_word()
+
+        if not correct:
+            self.guesses += 1
+            self.img_label.config(image=self.images[self.guesses])
+
+        button = self.buttons[button]
         button["state"] = tk.DISABLED
         button.configure(
             bg="Gray", fg="white", activebackground="Gray", activeforeground="white"
