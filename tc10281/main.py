@@ -26,7 +26,7 @@ class App:
         letter_groups = [
             ascii_uppercase[i : i + n] for i in range(0, len(ascii_uppercase), n)
         ]
-        buttons = []
+        self.buttons = {}
         for i, group in enumerate(letter_groups, start=1):
             for j, letter in enumerate(group, start=1):
                 _button = Button(
@@ -34,15 +34,16 @@ class App:
                     text=letter,
                     bg="skyBlue",
                     fg="Black",
-                    width=3,
+                    width=2,
                     height=1,
                     font=("Helvetica", "20"),
-                    command=lambda: self.guess(letter),
+                    command=lambda letter=letter: self.guess(letter),
                 )
                 _button.grid(column=j, row=i)
-                buttons.append(_button)
+                self.buttons[letter] = _button
 
     def guess(self, letter):
+        self.buttons[letter].configure(bg="Gray", fg="white")
         print(letter)
 
 
