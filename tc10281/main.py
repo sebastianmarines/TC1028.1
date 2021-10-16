@@ -34,6 +34,8 @@ class App:
                     text=letter,
                     bg="skyBlue",
                     fg="Black",
+                    activebackground="skyBlue",
+                    activeforeground="Black",
                     width=2,
                     height=1,
                     font=("Helvetica", "20"),
@@ -43,7 +45,11 @@ class App:
                 self.buttons[letter] = _button
 
     def guess(self, letter):
-        self.buttons[letter].configure(bg="Gray", fg="white")
+        button = self.buttons[letter]
+        button["state"] = tk.DISABLED
+        button.configure(
+            bg="Gray", fg="white", activebackground="Gray", activeforeground="white"
+        )
         print(letter)
 
 
