@@ -21,20 +21,18 @@ defmodule Words do
   end
 
   defp scrape_word(word_list) do
-    resp = request("https://www.aleatorios.com/")
+    resp = request("https://www.palabrasque.com/palabra-aleatoria.php?Submit=Nueva+palabra")
 
     word =
       resp
       |> Floki.parse_document!()
-      |> Floki.find("div.col.text-center.result")
-      |> Floki.find("h1")
+      |> Floki.find("b")
       |> Enum.at(0)
       |> elem(2)
       |> Enum.at(0)
-      |> String.split("\n")
-      |> Enum.at(0)
       |> :unicode.characters_to_nfd_binary()
       |> String.replace(~r/\W/u, "")
+      |> String.upcase()
 
     [word | word_list]
   end
