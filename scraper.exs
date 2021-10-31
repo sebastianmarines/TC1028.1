@@ -8,33 +8,29 @@ defmodule Words do
     get([], loops)
   end
 
-  defp get(word_list, loops) do
-    if loops == 0 do
-      word_list
-    else
-      Process.sleep(700)
-      IO.write(".")
+  defp get(word_list, 0) do
+    word_list
+  end
 
-      scrape_word(word_list)
-      |> get(loops - 1)
-    end
+  defp get(word_list, loops) do
+    Process.sleep(50)
+    IO.write(".")
+
+    scrape_word(word_list)
+    |> get(loops - 1)
   end
 
   defp scrape_word(word_list) do
-    resp = request("https://www.palabrasque.com/palabra-aleatoria.php?Submit=Nueva+palabra")
-
-    word =
-      resp
-      |> Floki.parse_document!()
-      |> Floki.find("b")
-      |> Enum.at(0)
-      |> elem(2)
-      |> Enum.at(0)
-      |> :unicode.characters_to_nfd_binary()
-      |> String.replace(~r/\W/u, "")
-      |> String.upcase()
-
-    [word | word_list]
+    request("https://www.palabrasque.com/palabra-aleatoria.php?Submit=Nueva+palabra")
+    |> Floki.parse_document!()
+    |> Floki.find("b")
+    |> Enum.at(0)
+    |> elem(2)
+    |> Enum.at(0)
+    |> :unicode.characters_to_nfd_binary()
+    |> String.replace(~r/\W/u, "")
+    |> String.upcase()
+    |> (&[&1 | word_list]).()
   end
 
   defp request(url) do
